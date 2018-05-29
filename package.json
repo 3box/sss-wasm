@@ -5,14 +5,21 @@
   "author": "Bakaoh",
   "repository": "https://github.com/uport-project/sss-wasm.git",
   "license": "Apache-2.0",
-  "main": "lib.js",
+  "main": "lib/sss-wasm.min.js",
   "devDependencies": {
     "browser-env": "^3.2.5",
     "jsverify": "0.8",
-    "shuffle-array": "1.0"
+    "shuffle-array": "1.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^3.10.0",
+    "yargs": "^10.0.3"
   },
   "scripts": {
-    "build:wasm": "emcc -O3 -s WASM=1 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o wrapper.js",
+    "build": "webpack --env dev",
+    "build:wasm": "emcc -O3 -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o wrapper.js",
     "test": "node test"
   },
   "homepage": "https://github.com/uport-project/sss-wasm#readme"

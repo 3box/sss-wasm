@@ -13,10 +13,19 @@ static int randombytes_emscripten_randombytes(void *buf, size_t n)
 	for (i = (size_t)0U; i < n; i++)
 	{
 		p[i] = (unsigned char)EM_ASM_INT_V({
-			var buf = new window.Uint8Array(4);
-			var crypto = window.crypto || window.msCrypto;
-			crypto.getRandomValues(buf);
-			return (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3]) >>> 0;
+			if (typeof window!=="undefined") {
+				var crypto = window.crypto || window.msCrypto;
+				if (crypto) {
+					var buf = new window.Uint8Array(4);
+					crypto.getRandomValues(buf);
+					return (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3]) >>> 0;
+				}
+			}
+			var crypto = require('crypto');
+			if (crypto) {
+				var buf = crypto.randomBytes(4);
+				return (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3]) >>> 0;
+			}
 		});
 	}
 	return 0;

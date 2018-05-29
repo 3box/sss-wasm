@@ -1,12 +1,14 @@
-const Module = require("./wrapper");
+const Wrapper = require("./wrapper.js");
 
 let api = undefined;
 
 function load() {
   if (api) return new Promise(resolve => resolve(api));
-  return new Promise(resolve => Module.onRuntimeInitialized = resolve)
-    .then(_ => {
+  return new Promise(resolve => {
+    Wrapper().then(Module => {
       api = {
+        set: (d, p) => Module.HEAPU8.set(d, p),
+        slice: (f, t) => Module.HEAPU8.slice(f, t),
         getShareLen: Module.cwrap('get_share_len', 'number', []),
         getMessageLen: Module.cwrap('get_message_len', 'number', []),
         getKeyshareLen: Module.cwrap('get_keyshare_len', 'number', []),
@@ -18,21 +20,22 @@ function load() {
         createKeyshares: Module.cwrap('create_keyshares', 'number', ['number', 'number', 'number']),
         combineKeyshares: Module.cwrap('combine_keyshares', 'number', ['number', 'number']),
       };
-      return api;
+      resolve(api);
     });
+  });
 }
 
 exports.createShares = function createShares(data, n, k) {
   return load().then(api => {
     const datap = api.createBuffer(data.length);
-    Module.HEAPU8.set(data, datap);
+    api.set(data, datap);
     const sharep = api.createShares(datap, n, k);
     api.destroyBuffer(datap);
 
     const shareLen = api.getShareLen();
     const shares = [];
     for (let i = 0; i < n; i++) {
-      shares[i] = Module.HEAPU8.slice(sharep + shareLen * i, sharep + shareLen * (i + 1));
+      shares[i] = api.slice(sharep + shareLen * i, sharep + shareLen * (i + 1));
     }
     return shares;
   });
@@ -42,28 +45,28 @@ exports.combineShares = function combineShares(shares) {
   return load().then(api => {
     const input = api.createBuffer(api.getShareLen() * shares.length);
     for (let s in shares) {
-      Module.HEAPU8.set(shares[s], input + s * api.getShareLen());
+      api.set(shares[s], input + s * api.getShareLen());
     }
 
     const datap = api.combineShares(input, shares.length);
     if (!datap) throw "InvalidAccessError: invalid or too few shares provided";
     api.destroyBuffer(input);
 
-    return Module.HEAPU8.slice(datap, datap + api.getMessageLen());
+    return api.slice(datap, datap + api.getMessageLen());
   });
 };
 
 exports.createKeyshares = function createKeyshares(key, n, k) {
   return load().then(api => {
     const keyp = api.createBuffer(key.length);
-    Module.HEAPU8.set(key, keyp);
+    api.set(key, keyp);
     const sharep = api.createKeyshares(keyp, n, k);
     api.destroyBuffer(keyp);
 
     const shareLen = api.getKeyshareLen();
     const shares = [];
     for (let i = 0; i < n; i++) {
-      shares[i] = Module.HEAPU8.slice(sharep + shareLen * i, sharep + shareLen * (i + 1));
+      shares[i] = api.slice(sharep + shareLen * i, sharep + shareLen * (i + 1));
     }
     return shares;
   });
@@ -73,12 +76,12 @@ exports.combineKeyshares = function combineKeyshares(keyshares) {
   return load().then(api => {
     const input = api.createBuffer(api.getKeyshareLen() * keyshares.length);
     for (let s in keyshares) {
-      Module.HEAPU8.set(keyshares[s], input + s * api.getKeyshareLen());
+      api.set(keyshares[s], input + s * api.getKeyshareLen());
     }
 
     const keyp = api.combineKeyshares(input, keyshares.length);
     api.destroyBuffer(input);
 
-    return Module.HEAPU8.slice(keyp, keyp + api.getKeyLen());
+    return api.slice(keyp, keyp + api.getKeyLen());
   });
 }

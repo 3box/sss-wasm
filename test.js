@@ -1,14 +1,6 @@
 const sss = require("./lib");
 const jsc = require("jsverify");
 const shuffle = require('shuffle-array');
-const crypto = require('crypto');
-
-require('browser-env')();
-window.crypto = {
-  getRandomValues(buf) {
-    buf.set(crypto.randomBytes(4));
-  }
-}
 
 const data = Buffer.alloc(64, 0x42);
 const key = data.slice(32);
