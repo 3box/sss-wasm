@@ -31,7 +31,7 @@ EMSCRIPTEN_KEEPALIVE
 uint8_t *create_shares(uint8_t *data, uint8_t n, uint8_t k)
 {
     uint8_t *output = (uint8_t *)malloc(sss_SHARE_LEN * n);
-    sss_create_shares(output, data, n, k);
+    sss_create_shares((sss_Share *)output, data, n, k);
     return output;
 }
 
@@ -39,15 +39,19 @@ EMSCRIPTEN_KEEPALIVE
 uint8_t *combine_shares(uint8_t *input, uint8_t k)
 {
     uint8_t *data = (uint8_t *)malloc(sss_MLEN);
-    sss_combine_shares(data, input, k);
-    return data;
+    if (sss_combine_shares(data, (sss_Share *)input, k) == 0) {
+        return data;
+    } else {
+        free(data);
+        return NULL;
+    }
 }
 
 EMSCRIPTEN_KEEPALIVE
 uint8_t *create_keyshares(uint8_t *key, uint8_t n, uint8_t k)
 {
     uint8_t *output = (uint8_t *)malloc(sss_KEYSHARE_LEN * n);
-    sss_create_keyshares(output, key, n, k);
+    sss_create_keyshares((sss_Keyshare *)output, key, n, k);
     return output;
 }
 
@@ -55,7 +59,7 @@ EMSCRIPTEN_KEEPALIVE
 uint8_t *combine_keyshares(uint8_t *input, uint8_t k)
 {
     uint8_t *key = (uint8_t *)malloc(32);
-    sss_combine_keyshares(key, input, k);
+    sss_combine_keyshares(key, (sss_Keyshare *)input, k);
     return key;
 }
 

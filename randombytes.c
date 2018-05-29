@@ -26,8 +26,8 @@ static int randombytes_emscripten_randombytes(void *buf, size_t n)
 int randombytes(void *buf, size_t n)
 {
 #if defined(__EMSCRIPTEN__)
-#pragma message("Using browser Module.getRandomValue")
-	/* Use Module.getRandomValue */
+#pragma message("Using browser window.crypto.getRandomValues")
+	/* Use window.crypto.getRandomValues */
 	return randombytes_emscripten_randombytes(buf, n);
 #else
 #error "randombytes(...) is not supported on this platform"

@@ -7,10 +7,12 @@ Currently there are bindings for sss in node.js. However this code will not run 
 ## Usage
 ```js
 // Import the sss library
-const sss = require("shamirsecretsharing");
+const sss = require("sss-wasm");
 
 // Create a buffer for the data that will be shared (must be 64 bytes long)
-const data = Buffer.alloc(64, 0x42);
+const data = new Uint8Array(64);
+data.fill(0x42);
+
 const amount = 5;
 const theshold = 4;
 

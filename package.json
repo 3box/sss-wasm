@@ -1,0 +1,19 @@
+{
+  "name": "sss-wasm",
+  "version": "0.1.0",
+  "description": "wasm bindings for the sss secret sharing library",
+  "author": "Bakaoh",
+  "repository": "https://github.com/uport-project/sss-wasm.git",
+  "license": "Apache-2.0",
+  "main": "lib.js",
+  "devDependencies": {
+    "browser-env": "^3.2.5",
+    "jsverify": "0.8",
+    "shuffle-array": "1.0"
+  },
+  "scripts": {
+    "build:wasm": "emcc -O3 -s WASM=1 -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o wrapper.js",
+    "test": "node test"
+  },
+  "homepage": "https://github.com/uport-project/sss-wasm#readme"
+}
