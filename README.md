@@ -42,3 +42,12 @@ let main = restoredPromise.then((x) => {
     console.log("Error: " + x);
 });
 ```
+
+## Build
+We need Emscripten toolchain installed to build wasm. [More info](https://webassembly.org/getting-started/developers-guide/)
+
+```
+$ npm install
+$ npm run build:wasm
+$ npm run build
+```

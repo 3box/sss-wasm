@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="description" content="HTML page /w javascript source for using the SSS web API">
+<meta name="author" content="Daan Sprenkels <hello@dsprenkels.com">
+<title>Shamir secret sharing web-ui</title>
+<style>
+    * {
+        font-family: monospace;
+    }
+</style>
+<h1>Shamir secret sharing web-ui</h1>
+<p>
+    This page allows you to split your secrets into parts using Daan Sprenkels'
+    <a href="https://github.com/dsprenkels/sss">Shamir secret sharing library</a>. (
+    <a href="https://github.com/dsprenkels/sss-node/tree/master/example">source code</a>)
+</p>
+<p>
+    Note: Currently the maximum secret size is 63 bytes.
+</p>
+<div>
+    <h3>Secret:</h3>
+    <textarea id="message" cols="80" rows="10">Hello World! :D</textarea>
+</div>
+<div>
+    <label>share count:</label>
+    <input id="count" type="number" min="1" max="255" step="1" value="5">
+    <label>threshold:</label>
+    <input id="threshold" type="number" min="1" max="255" step="1" value="4">
+    <button id="split_btn">split secret 🠗</button>
+    <button id="combine_btn">combine shares 🠕</button>
+</div>
+<div>
+    <h3>Shares:</h3>
+    <textarea id="shares" cols="80" rows="10"></textarea>
+</div>
+<script src="sss-wasm.js"></script>
+<script type="text/javascript">
+
+    function buf2hex(buffer) {
+        return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+    }
+
+    function hex2buf(hex) {
+        var bytes = new Uint8Array(Math.ceil(hex.length / 2));
+        for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+        return bytes;
+    }
+
+    function do_split() {
+        let messageText = document.getElementById("message").value;
+        let count = document.getElementById("count").value;
+        let threshold = document.getElementById("threshold").value;
+
+        while (messageText.length < 64) {
+            messageText += ' ';
+        }
+        let enc = new TextEncoder(); // always utf-8
+        let data = enc.encode(messageText);
+
+        let sharesPromise = sss.createShares(data, parseInt(count), parseInt(threshold));
+        sharesPromise.then((x) => {
+            let outputElem = document.getElementById("shares");
+            outputElem.value = "";
+            for (i in x) {
+                outputElem.value += buf2hex(x[i]) + '\n';
+            }
+        });
+    }
+
+    function do_combine() {
+        let sharesText = document.getElementById("shares").value;
+        let lines = sharesText.split("\n");
+        let shares = [];
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (line) shares.push(hex2buf(line));
+        }
+
+        let restoredPromise = sss.combineShares(shares);
+        restoredPromise.then((x) => {
+            let dec = new TextDecoder('utf-8');
+            let data = dec.decode(x).trim();
+
+            let outputElem = document.getElementById("message");
+            outputElem.value = data;
+        }).catch(e => alert(e));
+    }
+
+    (function load() {
+        let splitButton = document.getElementById("split_btn");
+        splitButton.addEventListener("click", do_split);
+
+        let combineButton = document.getElementById("combine_btn");
+        combineButton.addEventListener("click", do_combine);
+    })();
+
+</script>
