@@ -24,5 +24,8 @@
     "test": "node test",
     "deploy": "gh-pages -d example"
   },
-  "homepage": "https://github.com/uport-project/sss-wasm#readme"
+  "homepage": "https://github.com/uport-project/sss-wasm#readme",
+  "dependencies": {
+    "wasm-loader": "^1.3.0"
+  }
 }

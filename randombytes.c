@@ -7,28 +7,24 @@
 #if defined(__EMSCRIPTEN__)
 static int randombytes_emscripten_randombytes(void *buf, size_t n)
 {
-	unsigned char *p = (unsigned char *)buf;
-	size_t i;
-
-	for (i = (size_t)0U; i < n; i++)
-	{
-		p[i] = (unsigned char)EM_ASM_INT_V({
-			if (typeof window!=="undefined") {
-				var crypto = window.crypto || window.msCrypto;
-				if (crypto) {
-					var buf = new window.Uint8Array(4);
-					crypto.getRandomValues(buf);
-					return (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3]) >>> 0;
-				}
-			}
-			var crypto = require('crypto');
+	const int ret = EM_ASM_INT({
+		if (typeof window!=="undefined") {
+			var crypto = window.crypto || window.msCrypto;
 			if (crypto) {
-				var buf = crypto.randomBytes(4);
-				return (buf[0] << 24 | buf[1] << 16 | buf[2] << 8 | buf[3]) >>> 0;
+				var buf = new window.Uint8Array($1);
+				crypto.getRandomValues(buf);
+				writeArrayToMemory(buf, $0);
+				return 0;
 			}
-		});
-	}
-	return 0;
+		}
+		var crypto = require('crypto');
+		if (crypto) {
+			writeArrayToMemory(crypto.randomBytes($1), $0);
+			return 0;
+		}
+		return -1;
+	}, buf, n);
+	return ret;
 }
 #endif /* defined(__EMSCRIPTEN__) */
 

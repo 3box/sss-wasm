@@ -33,6 +33,12 @@ const config = {
         loader: 'babel-loader',
         exclude: /(node_modules|bower_components)/
       }
+    ],
+    loaders: [
+      {
+        test: /\.wasm$/,
+        loaders: ['wasm-loader']
+      }
     ]
   },
   resolve: {

@@ -51,13 +51,15 @@
         let count = document.getElementById("count").value;
         let threshold = document.getElementById("threshold").value;
 
-        while (messageText.length < 64) {
-            messageText += ' ';
-        }
         let enc = new TextEncoder(); // always utf-8
         let data = enc.encode(messageText);
+        if (data.length > 63) alert("Error: text too long (max 63 bytes)");
+        
+        let extData = new Uint8Array(64);
+        extData.set(data, 0);
+        extData[data.length] = 0x80;
 
-        let sharesPromise = sss.createShares(data, parseInt(count), parseInt(threshold));
+        let sharesPromise = sss.createShares(extData, parseInt(count), parseInt(threshold));
         sharesPromise.then((x) => {
             let outputElem = document.getElementById("shares");
             outputElem.value = "";
@@ -78,8 +80,13 @@
 
         let restoredPromise = sss.combineShares(shares);
         restoredPromise.then((x) => {
+            let i = 0;
+            for (; i < x.length; i++) {
+                if (x[i] == 0x80) break;
+            }
+
             let dec = new TextDecoder('utf-8');
-            let data = dec.decode(x).trim();
+            let data = dec.decode(x.slice(0, i));
 
             let outputElem = document.getElementById("message");
             outputElem.value = data;
