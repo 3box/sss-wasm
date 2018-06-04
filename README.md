@@ -7,10 +7,12 @@ Currently there are bindings for sss in node.js. However this code will not run 
 ## Usage
 ```js
 // Import the sss library
-const sss = require("shamirsecretsharing");
+const sss = require("sss-wasm");
 
 // Create a buffer for the data that will be shared (must be 64 bytes long)
-const data = Buffer.alloc(64, 0x42);
+const data = new Uint8Array(64);
+data.fill(0x42);
+
 const amount = 5;
 const theshold = 4;
 
@@ -39,4 +41,13 @@ let main = restoredPromise.then((x) => {
 }).catch((x) => {
     console.log("Error: " + x);
 });
+```
+
+## Build
+We need Emscripten toolchain installed to build wasm. [More info](https://webassembly.org/getting-started/developers-guide/)
+
+```
+$ npm install
+$ npm run build:wasm
+$ npm run build
 ```
