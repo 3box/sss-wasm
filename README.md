@@ -1,4 +1,7 @@
 # Shamir secret sharing for Javascript
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/3box/sss-wasm.svg)](https://greenkeeper.io/)
+
 [Shamir secret sharing](https://en.wikipedia.org/wiki/Shamir's_Secret_Sharing) is an algorithm for splitting data into multiple `shares`, a subset of which can then be combined to reconstruct the original secret. This library aims to provide javascript bindings for [dsprenkles/sss](https://github.com/dsprenkels/sss/tree/master) implementation of this algorithm using Web Assembly.
 
 ## Background
