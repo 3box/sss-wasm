@@ -9,13 +9,13 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^8.0.4",
     "babel-preset-env": "^1.6.1",
-    "gh-pages": "^1.1.0",
+    "gh-pages": "^2.0.1",
     "jsverify": "0.8",
     "shuffle-array": "1.0",
-    "webpack": "^3.10.0",
-    "yargs": "^10.0.3"
+    "webpack": "^4.26.1",
+    "yargs": "^12.0.5"
   },
   "scripts": {
     "build": "webpack --env dev && webpack --env build && npm run test",
