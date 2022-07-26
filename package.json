@@ -6,8 +6,13 @@
   "type": "module",
   "repository": "https://github.com/uport-project/sss-wasm.git",
   "license": "Apache-2.0",
-  "main": "lib/index.js",
-  "exports": "./lib/index.js",
+  "main": "lib/node.js",
+  "module": "lib/node.js",
+  "browser": "lib/index.js",
+  "exports": {
+    "node": "./lib/node.js",
+    "default": "./lib/index.js"
+  },
   "files": [
     "lib/"
   ],
@@ -24,8 +29,7 @@
     "yargs": "^10.0.3"
   },
   "scripts": {
-    "build": "webpack --env dev --config ./webpack.config.cjs && webpack --config ./webpack.config.cjs --env build && npm run test",
-    "build:wasm": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss lib/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c lib/randombytes.c  -o lib/gen/wrapper.js",
+    "build": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss lib/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c lib/randombytes.c  -o lib/gen/wrapper.js",
     "test": "node ./test/test.js",
     "deploy": "gh-pages -d example"
   },

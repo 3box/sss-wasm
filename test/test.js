@@ -1,4 +1,4 @@
-import * as sss from '../lib/index.js'
+import * as sss from '../lib/node.js'
 import jsc from 'jsverify'
 import shuffle from 'shuffle-array'
 
