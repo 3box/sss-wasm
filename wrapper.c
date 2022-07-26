@@ -64,7 +64,7 @@ uint8_t *combine_keyshares(uint8_t *input, uint8_t k)
 }
 
 EMSCRIPTEN_KEEPALIVE
-uint8_t *create_buffer(length)
+uint8_t *create_buffer(uint8_t length)
 {
     return malloc(length * sizeof(uint8_t));
 }

@@ -1,4 +1,19 @@
-const Wrapper = require("./wrapper.js");
+globalThis.__dirname = import.meta.url.match(/^(.+)\/([^\/]+)$/)[1].replace(/^file:\/\//, '')
+import { createRequire } from 'module';
+globalThis.require = (p) => {
+  const origRequire = createRequire(import.meta.url);
+  if (p === 'path') {
+    const module = origRequire('path')
+    return {
+      ...module,
+      normalize: (a) => a.replace(/^file:\/\//, '')
+    }
+  } else {
+    return origRequire(p)
+  }
+}
+
+import Wrapper from "./wrapper.js";
 
 let api = undefined;
 
@@ -25,7 +40,7 @@ function load() {
   });
 }
 
-exports.createShares = function createShares(data, n, k) {
+export const createShares = function createShares(data, n, k) {
   return load().then(api => {
     const datap = api.createBuffer(data.length);
     api.set(data, datap);
@@ -41,7 +56,7 @@ exports.createShares = function createShares(data, n, k) {
   });
 };
 
-exports.combineShares = function combineShares(shares) {
+export const combineShares = function combineShares(shares) {
   return load().then(api => {
     const input = api.createBuffer(api.getShareLen() * shares.length);
     for (let s in shares) {
@@ -56,7 +71,7 @@ exports.combineShares = function combineShares(shares) {
   });
 };
 
-exports.createKeyshares = function createKeyshares(key, n, k) {
+export const createKeyshares = function createKeyshares(key, n, k) {
   return load().then(api => {
     const keyp = api.createBuffer(key.length);
     api.set(key, keyp);
@@ -72,7 +87,7 @@ exports.createKeyshares = function createKeyshares(key, n, k) {
   });
 }
 
-exports.combineKeyshares = function combineKeyshares(keyshares) {
+export const combineKeyshares = function combineKeyshares(keyshares) {
   return load().then(api => {
     const input = api.createBuffer(api.getKeyshareLen() * keyshares.length);
     for (let s in keyshares) {

@@ -1,6 +1,6 @@
-const sss = require("./lib");
-const jsc = require("jsverify");
-const shuffle = require('shuffle-array');
+import * as sss from './lib.js'
+import jsc from 'jsverify'
+import shuffle from 'shuffle-array'
 
 const data = Buffer.alloc(64, 0x42);
 const key = data.slice(32);
