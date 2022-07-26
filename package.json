@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "webpack --env dev --config ./webpack.config.cjs && webpack --config ./webpack.config.cjs --env build && npm run test",
-    "build:wasm": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss src/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o src/gen/wrapper.js",
+    "build:wasm": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss lib/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o lib/gen/wrapper.js",
     "test": "node test",
     "deploy": "gh-pages -d example"
   },
