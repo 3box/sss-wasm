@@ -9,6 +9,7 @@
   "main": "lib/node.js",
   "module": "lib/node.js",
   "browser": "lib/index.js",
+  "types": "lib/index.d.ts",
   "exports": {
     "node": "./lib/node.js",
     "default": "./lib/index.js"
