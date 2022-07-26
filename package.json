@@ -6,9 +6,11 @@
   "type": "module",
   "repository": "https://github.com/uport-project/sss-wasm.git",
   "license": "Apache-2.0",
-  "main": "lib/sss-wasm.main.js",
-  "module": "lib/sss-wasm.module.js",
-  "browser": "lib/sss-wasm.browser.js",
+  "main": "lib/index.js",
+  "exports": "./lib/index.js",
+  "files": [
+    "lib/"
+  ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -23,8 +25,8 @@
   },
   "scripts": {
     "build": "webpack --env dev --config ./webpack.config.cjs && webpack --config ./webpack.config.cjs --env build && npm run test",
-    "build:wasm": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss lib/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c randombytes.c  -o lib/gen/wrapper.js",
-    "test": "node test",
+    "build:wasm": "emcc -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=\"Wrapper\" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]' -I sss lib/wrapper.c sss/hazmat.c sss/tweetnacl.c sss/sss.c lib/randombytes.c  -o lib/gen/wrapper.js",
+    "test": "node ./test/test.js",
     "deploy": "gh-pages -d example"
   },
   "homepage": "https://github.com/uport-project/sss-wasm#readme"

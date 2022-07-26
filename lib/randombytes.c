@@ -1,4 +1,4 @@
-#include "sss/randombytes.h"
+#include "../sss/randombytes.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
