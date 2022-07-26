@@ -5,49 +5,45 @@
 Currently there are bindings for sss in node.js. However this code will not run in the browser since it uses node binaries. By using Web Assembly it is possible to create a javascript library that works both in the browser as well as node.js.
 
 ## Usage
-```js
+```ts
 // Import the sss library
-const sss = require("sss-wasm");
+import * as sss from 'sss-wasm' 
 
 // Create a buffer for the data that will be shared (must be 64 bytes long)
 const data = new Uint8Array(64);
 data.fill(0x42);
 
 const amount = 5;
-const theshold = 4;
+const threshold = 4;
 
 // Creating 5 shares (need 3 to restore)
-let sharesPromise = sss.createShares(data, amount, theshold);
-
-// Write the shares to the screen
-sharesPromise.then((x) => {
-    console.log(x);
-    return x;
-});
+const shares = await sss.createShares(data, amount, threshold);
 
 // For demonstrational purpose, lose one of the shares
-let newSharesPromise = sharesPromise.then((x) => {
-    return [x[3], x[2], x[4], x[0]];
-});
+const newShares = [shares[3], shares[2], shares[4], shares[0]]
 
 // Restore the original secret
-let restoredPromise = newSharesPromise.then((x) => {
-    return sss.combineShares(x);
-});
+const restored = await sss.combineShares(newShares);
 
 // Dump the original secret back to the screen
-let main = restoredPromise.then((x) => {
-    console.log(x);
-}).catch((x) => {
-    console.log("Error: " + x);
-});
+console.log(restored)
 ```
 
 ## Build
 We need Emscripten toolchain installed to build wasm. [More info](https://webassembly.org/getting-started/developers-guide/)
 
+You need to setup submodules first.
 ```
-$ npm install
-$ npm run build:wasm
-$ npm run build
+git submodules init
+git submodules update
+cd sss
+git submodules init
+git submodules update
+```
+
+Then go to the root folder.
+```
+npm install
+npm run build
+npm run test
 ```

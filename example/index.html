@@ -33,9 +33,8 @@
     <h3>Shares:</h3>
     <textarea id="shares" cols="80" rows="10"></textarea>
 </div>
-<script src="sss-wasm.js"></script>
+<script src="./index.js" type="module"></script>
 <script type="text/javascript">
-
     function buf2hex(buffer) {
         return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
     }
@@ -46,7 +45,7 @@
         return bytes;
     }
 
-    function do_split() {
+    async function do_split() {
         let messageText = document.getElementById("message").value;
         let count = document.getElementById("count").value;
         let threshold = document.getElementById("threshold").value;
@@ -59,17 +58,15 @@
         extData.set(data, 0);
         extData[data.length] = 0x80;
 
-        let sharesPromise = sss.createShares(extData, parseInt(count), parseInt(threshold));
-        sharesPromise.then((x) => {
+        let shares = await sss.createShares(extData, parseInt(count), parseInt(threshold));
             let outputElem = document.getElementById("shares");
             outputElem.value = "";
-            for (i in x) {
-                outputElem.value += buf2hex(x[i]) + '\n';
+            for (let i in shares) {
+                outputElem.value += buf2hex(shares[i]) + '\n';
             }
-        });
     }
 
-    function do_combine() {
+    async function do_combine() {
         let sharesText = document.getElementById("shares").value;
         let lines = sharesText.split("\n");
         let shares = [];
@@ -78,19 +75,21 @@
             if (line) shares.push(hex2buf(line));
         }
 
-        let restoredPromise = sss.combineShares(shares);
-        restoredPromise.then((x) => {
+        try {
+            let restored = await sss.combineShares(shares);
             let i = 0;
-            for (; i < x.length; i++) {
-                if (x[i] == 0x80) break;
+            for (; i < restored.length; i++) {
+                if (restored[i] === 0x80) break;
             }
 
             let dec = new TextDecoder('utf-8');
-            let data = dec.decode(x.slice(0, i));
+            let data = dec.decode(restored.slice(0, i));
 
             let outputElem = document.getElementById("message");
             outputElem.value = data;
-        }).catch(e => alert(e));
+        } catch (e) {
+            alert(e)
+        }
     }
 
     (function load() {
